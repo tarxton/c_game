@@ -4,7 +4,7 @@
 
 #define WIDTH 800                                                               /* width and height of window */
 #define HEIGHT 600
-#define RECT_DIM 100.0f
+#define RECT_DIM 100.0f                                                         /* dimensions of input blocks */
 
 static SDL_Window *window = NULL;
 static SDL_Renderer *renderer = NULL;
@@ -12,16 +12,6 @@ static SDL_Surface *bg_surface = NULL;
 static SDL_Texture *bg_texture = NULL;
 static SDL_FRect rects[4];
 static SDL_FRect borders[4];
-
-/*
-struct Circle
-{
-    int x;
-    int y;
-    SDL_FColor color;
-};
-*/
-
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])              /* runs once at startup, initialization */
 {
@@ -35,7 +25,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])              
     SDL_GetRenderOutputSize(renderer, &x, &y);
     float y_pos = y/4 - RECT_DIM/2;
 
-    for (int i = 0; i < SDL_arraysize(rects); i++)
+    for (int i = 0; i < SDL_arraysize(rects); i++)                              /* properties of blocks and borders initialized on app start*/
     {
         rects[i].w = rects[i].h = RECT_DIM;
         rects[i].x = 175.0f;
@@ -62,34 +52,16 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 
 SDL_AppResult SDL_AppIterate(void *appstate)
 {
-    const char *msg = "ARHITEKTURA RAHHHHHHHH";
-    int w = 0, h = 0;                                                           /* window resolution */
-    float x, y;                                                                 /* top left coordinates of message */
-    const float scale = 4.0f;                                                   /* scale to text */
-
-    SDL_GetRenderOutputSize(renderer, &w, &h);                                    /* gets size of render target (window) in pixels */
-    //SDL_SetRenderScale(renderer, scale, scale);                                   /* scale all rendering, drawing at (x,y) now draws at (x*scale, y*scale) */
-    //x = ((w / scale) - SDL_DEBUG_TEXT_FONT_CHARACTER_SIZE * SDL_strlen(msg)) / 2; /* horizontal center */
-    //y = ((h / scale) - SDL_DEBUG_TEXT_FONT_CHARACTER_SIZE) / 2;                   /* vertical center */
-
-    bg_surface = SDL_LoadBMP("assets/background.bmp");
-    bg_texture = SDL_CreateTextureFromSurface(renderer, bg_surface);
-
-    //SDL_SetRenderDrawColor(renderer, 0, 0, 50, 255);                            /* sets color */
-    //SDL_RenderClear(renderer);                                                  /* clears screen with current color */
-    
+    bg_surface = SDL_LoadBMP("assets/background.bmp");                            /* load bitmap from assets to sdl surface */
+    bg_texture = SDL_CreateTextureFromSurface(renderer, bg_surface);              /* creates texture from sdl surface */
     SDL_RenderTexture(renderer, bg_texture, NULL, NULL);
     
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);                             /* draw input blocks and borders */
     SDL_RenderFillRects(renderer, borders, SDL_arraysize(borders));
     SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
     SDL_RenderFillRects(renderer, rects, SDL_arraysize(rects));
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);                           
-    //SDL_RenderDebugText(renderer, x, y, msg);                                   /* draws text */
     SDL_RenderPresent(renderer);                                                /* presents renderer to window */
-
-
 
     return SDL_APP_CONTINUE;
 }
