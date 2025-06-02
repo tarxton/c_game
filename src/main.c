@@ -5,6 +5,15 @@
 #define WIDTH 800 /* width and height of window */
 #define HEIGHT 600
 #define RECT_DIM 100.0f /* dimensions of input blocks */
+#define BORDER_OFFSET_POS 10.0f /* offset for border positioning */
+#define BORDER_OFFSET_SIZE 20.0f /* offset for border size */
+#define GATE_W 150.0f /* width and height of gates */
+#define GATE_H 320.0f
+#define RED 255, 0, 0, 255 /* color values (r, g, b, a) */
+#define GREEN 0, 255, 0, 255
+#define GRAY 128, 128, 128, 255
+#define WHITE 255, 255, 255, 255
+
 
 /* initialize window and renderer variables */
 static SDL_Window *window = NULL;
@@ -45,7 +54,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) /* runs once 
     SDL_GetRenderOutputSize(renderer, &x, &y);
     float y_pos = y / 4 - RECT_DIM / 2;
 
-    for (int i = 0; i < SDL_arraysize(rects); i++) /* properties of blocks and borders initialized on app start*/
+    for (int i = 0; i < SDL_arraysize(rects); i++)      /* properties of blocks, borders, and wires initialized on app start*/
     {
         rects[i].w = rects[i].h = RECT_DIM;
         rects[i].x = 175.0f;
@@ -56,9 +65,9 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) /* runs once 
         wires[i].x = rects[i].x + rects[i].w;
         wires[i].y = rects[i].y + 45.0f;
 
-        borders[i].w = borders[i].h = RECT_DIM + 20.0f;
-        borders[i].x = 165.0f;
-        borders[i].y = rects[i].y - 10.0f;
+        borders[i].w = borders[i].h = RECT_DIM + BORDER_OFFSET_SIZE;
+        borders[i].x = rects[i].x - BORDER_OFFSET_POS;
+        borders[i].y = rects[i].y - BORDER_OFFSET_POS;
     }
 
     result.x = ((float)x) - 100.0f;
@@ -66,30 +75,30 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) /* runs once 
     result.w = 100.0f;
     result.h = rects[3].y - 75.0f;
 
-    result_border.x = result.x - 10.0f;
-    result_border.y = result.y - 10.0f;
-    result_border.w = result.w + 20.0f;
-    result_border.h = result.h + 20.0f;
+    result_border.x = result.x - BORDER_OFFSET_POS;
+    result_border.y = result.y - BORDER_OFFSET_POS;
+    result_border.w = result.w + BORDER_OFFSET_SIZE;
+    result_border.h = result.h + BORDER_OFFSET_SIZE;
 
     gates[0].x = wires[0].x + wires[0].w;
     gates[0].y = rects[0].y;
-    gates[0].w = 150.0f;
-    gates[0].h = 320.0f; 
+    gates[0].w = GATE_W;
+    gates[0].h = GATE_H; 
 
-    gate_borders[0].x = gates[0].x - 10.0f;
-    gate_borders[0].y = gates[0].y - 10.0f;
-    gate_borders[0].w = gates[0].w + 20.0f;
-    gate_borders[0].h = gates[0].h + 20.0f;
+    gate_borders[0].x = gates[0].x - BORDER_OFFSET_POS;
+    gate_borders[0].y = gates[0].y - BORDER_OFFSET_POS;
+    gate_borders[0].w = gates[0].w + BORDER_OFFSET_SIZE;
+    gate_borders[0].h = gates[0].h + BORDER_OFFSET_SIZE;
 
     gates[1].x = wires[0].x + wires[0].w;
     gates[1].y = rects[2].y;
-    gates[1].w = 150.0f;
-    gates[1].h = 320.0f; 
+    gates[1].w = GATE_W;
+    gates[1].h = GATE_H; 
 
-    gate_borders[1].x = gates[1].x - 10.0f;
-    gate_borders[1].y = gates[1].y - 10.0f;
-    gate_borders[1].w = gates[1].w + 20.0f;
-    gate_borders[1].h = gates[1].h + 20.0f;
+    gate_borders[1].x = gates[1].x - BORDER_OFFSET_POS;
+    gate_borders[1].y = gates[1].y - BORDER_OFFSET_POS;
+    gate_borders[1].w = gates[1].w + BORDER_OFFSET_SIZE;
+    gate_borders[1].h = gates[1].h + BORDER_OFFSET_SIZE;
 
     connect_wire.x = gates[0].x + 70.0f;
     connect_wire.y = gates[0].y + gates[0].h;
@@ -103,13 +112,13 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) /* runs once 
 
     gates[2].x = left_wire.x + left_wire.w;
     gates[2].y = left_wire.y - 160.0f;
-    gates[2].w = 150.0f;
-    gates[2].h = 320.0f;
+    gates[2].w = GATE_W;
+    gates[2].h = GATE_H;
 
-    gate_borders[2].x = gates[2].x - 10.0f;
-    gate_borders[2].y = gates[2].y - 10.0f;
-    gate_borders[2].w = gates[2].w + 20.0f;
-    gate_borders[2].h = gates[2].h + 20.0f;
+    gate_borders[2].x = gates[2].x - BORDER_OFFSET_POS;
+    gate_borders[2].y = gates[2].y - BORDER_OFFSET_POS;
+    gate_borders[2].w = gates[2].w + BORDER_OFFSET_SIZE;
+    gate_borders[2].h = gates[2].h + BORDER_OFFSET_SIZE;
 
     right_wire.x = gates[2].x + gates[2].w;
     right_wire.y = left_wire.y;
@@ -163,17 +172,17 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     for (int i = 0; i < SDL_arraysize(borders); i++)                   /* if gate is active, color border green, else red */
     {
         if (active[i])
-            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+            SDL_SetRenderDrawColor(renderer, GREEN);
         else
-            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+            SDL_SetRenderDrawColor(renderer, RED);
         SDL_RenderFillRect(renderer, &borders[i]);
     }
 
-    if (gate_active[2]) SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);   /* result block border coloring */
-    else SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    if (gate_active[2]) SDL_SetRenderDrawColor(renderer, GREEN);   /* result block border coloring */
+    else SDL_SetRenderDrawColor(renderer, RED);
     SDL_RenderFillRect(renderer, &result_border);
 
-    SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
+    SDL_SetRenderDrawColor(renderer, GRAY);
     SDL_RenderFillRects(renderer, wires, SDL_arraysize(wires));             /* wires connecting to blocks, mozda obojit i ovo jbg */
     
     for (int i = 0; i < SDL_arraysize(gate_active); i++)                    /* logic operations loop */
@@ -217,12 +226,12 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     
     for (int i = 0; i < SDL_arraysize(gate_active); i++)
     {
-        if (gate_active[i]) SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);       /* coloring gate borders, active or not */
-        else SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        if (gate_active[i]) SDL_SetRenderDrawColor(renderer, GREEN);       /* coloring gate borders, active or not */
+        else SDL_SetRenderDrawColor(renderer, RED);
         SDL_RenderFillRect(renderer, &gate_borders[i]);
     }
     
-    SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
+    SDL_SetRenderDrawColor(renderer, GRAY);
     SDL_RenderFillRects(renderer, rects, SDL_arraysize(rects));                 /* rest of geometry, wires and rects */
 
     SDL_RenderFillRect(renderer, &result);
@@ -231,20 +240,20 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     SDL_RenderFillRect(renderer, &left_wire);
     SDL_RenderFillRect(renderer, &right_wire);
 
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_SetRenderDrawColor(renderer, WHITE);
     SDL_SetRenderScale(renderer, 2.0f, 2.0f);                       /* scaling because letters are too small */
     for (int i = 0; i < SDL_arraysize(gate_op); i++)
     {
         float x, y;
         x = (gates[i].x + gates[i].w / 2 - SDL_DEBUG_TEXT_FONT_CHARACTER_SIZE * SDL_strlen(gate_op[i])) / 2;    
         y = (gates[i].y + gates[i].h / 2 - SDL_DEBUG_TEXT_FONT_CHARACTER_SIZE) / 2;
-        SDL_RenderDebugText(renderer, x, y, gate_op[i]);
+        SDL_RenderDebugText(renderer, x, y, SDL_strupr(gate_op[i])); /* conver to uppercase because of 'nAND' */
     }
     SDL_SetRenderScale(renderer, 1.0f, 1.0f);                       /* reseting the scale */
 
-    SDL_RenderPresent(renderer); /* presents renderer to window */
+    SDL_RenderPresent(renderer);                                    /* presents renderer to window */
 
     return SDL_APP_CONTINUE;
 }
 
-void SDL_AppQuit(void *appstate, SDL_AppResult result) {} /* runs once on shutdown */
+void SDL_AppQuit(void *appstate, SDL_AppResult result) {}           /* runs once on shutdown */
